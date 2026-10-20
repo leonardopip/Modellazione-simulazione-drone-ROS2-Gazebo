@@ -1,0 +1,90 @@
+<?xml version="1.0"?>
+<sdf version="1.9">
+  <model name="wind_turbine">
+
+    <link name="tower">
+      <pose>0 0 5 0 0 0</pose>
+      <inertial>
+        <mass>500</mass>
+        <inertia><ixx>5000</ixx><iyy>5000</iyy><izz>50</izz><ixy>0</ixy><ixz>0</ixz><iyz>0</iyz></inertia>
+      </inertial>
+      <collision name="collision">
+        <geometry><cylinder><radius>0.2</radius><length>10</length></cylinder></geometry>
+      </collision>
+      <visual name="visual">
+        <geometry><cylinder><radius>0.2</radius><length>10</length></cylinder></geometry>
+        <material><ambient>0.9 0.9 0.9 1</ambient><diffuse>0.9 0.9 0.9 1</diffuse></material>
+      </visual>
+    </link>
+
+    <joint name="tower_to_world" type="fixed">
+      <parent>world</parent>
+      <child>tower</child>
+    </joint>
+
+    <link name="rotor">
+      <pose>0.4 0 10.2 0 0 0</pose>
+      <inertial>
+        <mass>20</mass>
+        <inertia><ixx>60</ixx><iyy>30</iyy><izz>30</izz><ixy>0</ixy><ixz>0</ixz><iyz>0</iyz></inertia>
+      </inertial>
+
+      <visual name="hub">
+        <pose>0 0 0 0 1.5708 0</pose>
+        <geometry><cylinder><radius>0.25</radius><length>0.6</length></cylinder></geometry>
+        <material><ambient>0.8 0.8 0.8 1</ambient><diffuse>0.8 0.8 0.8 1</diffuse></material>
+      </visual>
+
+      <visual name="blade_1">
+        <pose>0 0 2.2 0 0 0</pose>
+        <geometry><box><size>0.05 0.3 4</size></box></geometry>
+        <material><ambient>1 1 1 1</ambient><diffuse>1 1 1 1</diffuse></material>
+      </visual>
+      <collision name="blade_1_col">
+        <pose>0 0 2.2 0 0 0</pose>
+        <geometry><box><size>0.05 0.3 4</size></box></geometry>
+      </collision>
+
+      <visual name="blade_2">
+        <pose>0 -1.905 -1.1 2.094 0 0</pose>
+        <geometry><box><size>0.05 0.3 4</size></box></geometry>
+        <material><ambient>1 1 1 1</ambient><diffuse>1 1 1 1</diffuse></material>
+      </visual>
+      <collision name="blade_2_col">
+        <pose>0 -1.905 -1.1 2.094 0 0</pose>
+        <geometry><box><size>0.05 0.3 4</size></box></geometry>
+      </collision>
+
+      <visual name="blade_3">
+        <pose>0 1.905 -1.1 4.189 0 0</pose>
+        <geometry><box><size>0.05 0.3 4</size></box></geometry>
+        <material><ambient>1 1 1 1</ambient><diffuse>1 1 1 1</diffuse></material>
+      </visual>
+      <collision name="blade_3_col">
+        <pose>0 1.905 -1.1 4.189 0 0</pose>
+        <geometry><box><size>0.05 0.3 4</size></box></geometry>
+      </collision>
+    </link>
+
+    <joint name="rotor_joint" type="revolute">
+      <parent>tower</parent>
+      <child>rotor</child>
+      <axis>
+        <xyz>1 0 0</xyz>
+        <limit>
+          <lower>-1e16</lower>
+          <upper>1e16</upper>
+        </limit>
+        <dynamics><damping>0.1</damping></dynamics>
+      </axis>
+    </joint>
+
+    <plugin filename="gz-sim-joint-controller-system"
+            name="gz::sim::systems::JointController">
+      <joint_name>rotor_joint</joint_name>
+      <use_velocity_control>true</use_velocity_control>
+      <initial_velocity>1.0</initial_velocity>
+    </plugin>
+
+  </model>
+</sdf>
