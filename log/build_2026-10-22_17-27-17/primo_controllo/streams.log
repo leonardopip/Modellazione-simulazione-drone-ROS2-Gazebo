@@ -1,0 +1,22 @@
+[0.371s] Invoking command in '/home/leo/gz_ws/src/primo_controllo': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/leo/gz_ws/build/primo_controllo/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/leo/gz_ws/install/primo_controllo/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/primo_controllo build --build-base /home/leo/gz_ws/build/primo_controllo/build install --record /home/leo/gz_ws/build/primo_controllo/install.log --install-scripts $base/lib/primo_controllo --single-version-externally-managed install_data
+[0.485s] running egg_info
+[0.491s] writing ../../build/primo_controllo/primo_controllo.egg-info/PKG-INFO
+[0.491s] writing dependency_links to ../../build/primo_controllo/primo_controllo.egg-info/dependency_links.txt
+[0.491s] writing entry points to ../../build/primo_controllo/primo_controllo.egg-info/entry_points.txt
+[0.491s] writing requirements to ../../build/primo_controllo/primo_controllo.egg-info/requires.txt
+[0.492s] writing top-level names to ../../build/primo_controllo/primo_controllo.egg-info/top_level.txt
+[0.505s] reading manifest file '../../build/primo_controllo/primo_controllo.egg-info/SOURCES.txt'
+[0.505s] adding license file 'LICENSE'
+[0.505s] writing manifest file '../../build/primo_controllo/primo_controllo.egg-info/SOURCES.txt'
+[0.506s] running build
+[0.506s] running build_py
+[0.506s] running install
+[0.509s] running install_lib
+[0.516s] running install_data
+[0.516s] running install_egg_info
+[0.523s] removing '/home/leo/gz_ws/install/primo_controllo/lib/python3.12/site-packages/primo_controllo-0.0.0-py3.12.egg-info' (and everything under it)
+[0.523s] Copying ../../build/primo_controllo/primo_controllo.egg-info to /home/leo/gz_ws/install/primo_controllo/lib/python3.12/site-packages/primo_controllo-0.0.0-py3.12.egg-info
+[0.523s] running install_scripts
+[0.580s] Installing listener_node script to /home/leo/gz_ws/install/primo_controllo/lib/primo_controllo
+[0.580s] writing list of installed files to '/home/leo/gz_ws/build/primo_controllo/install.log'
+[0.607s] Invoked command in '/home/leo/gz_ws/src/primo_controllo' returned '0': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/leo/gz_ws/build/primo_controllo/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/leo/gz_ws/install/primo_controllo/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/primo_controllo build --build-base /home/leo/gz_ws/build/primo_controllo/build install --record /home/leo/gz_ws/build/primo_controllo/install.log --install-scripts $base/lib/primo_controllo --single-version-externally-managed install_data

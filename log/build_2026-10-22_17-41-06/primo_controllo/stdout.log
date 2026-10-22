@@ -1,0 +1,17 @@
+running develop
+running egg_info
+writing primo_controllo.egg-info/PKG-INFO
+writing dependency_links to primo_controllo.egg-info/dependency_links.txt
+writing entry points to primo_controllo.egg-info/entry_points.txt
+writing requirements to primo_controllo.egg-info/requires.txt
+writing top-level names to primo_controllo.egg-info/top_level.txt
+reading manifest file 'primo_controllo.egg-info/SOURCES.txt'
+writing manifest file 'primo_controllo.egg-info/SOURCES.txt'
+running build_ext
+Creating /home/leo/gz_ws/install/primo_controllo/lib/python3.12/site-packages/primo-controllo.egg-link (link to .)
+Installing listener_node script to /home/leo/gz_ws/install/primo_controllo/lib/primo_controllo
+
+Installed /home/leo/gz_ws/build/primo_controllo
+running symlink_data
+symbolically linking /home/leo/gz_ws/build/primo_controllo/resource/primo_controllo -> /home/leo/gz_ws/install/primo_controllo/share/ament_index/resource_index/packages
+symbolically linking /home/leo/gz_ws/build/primo_controllo/package.xml -> /home/leo/gz_ws/install/primo_controllo/share/primo_controllo

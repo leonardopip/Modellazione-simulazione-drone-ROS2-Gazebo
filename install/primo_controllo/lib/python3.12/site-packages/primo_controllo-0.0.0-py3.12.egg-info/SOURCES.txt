@@ -1,0 +1,17 @@
+LICENSE
+package.xml
+setup.cfg
+setup.py
+../../build/primo_controllo/primo_controllo.egg-info/PKG-INFO
+../../build/primo_controllo/primo_controllo.egg-info/SOURCES.txt
+../../build/primo_controllo/primo_controllo.egg-info/dependency_links.txt
+../../build/primo_controllo/primo_controllo.egg-info/entry_points.txt
+../../build/primo_controllo/primo_controllo.egg-info/requires.txt
+../../build/primo_controllo/primo_controllo.egg-info/top_level.txt
+../../build/primo_controllo/primo_controllo.egg-info/zip-safe
+primo_controllo/__init__.py
+primo_controllo/primo_controllo.py
+resource/primo_controllo
+test/test_copyright.py
+test/test_flake8.py
+test/test_pep257.py
