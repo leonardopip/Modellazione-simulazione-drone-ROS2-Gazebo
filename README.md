@@ -32,7 +32,7 @@ Per l'implementazione dell'odometria e IMU ho inserito dei plugin all'interno de
       <topic>imu</topic>
 ```
 
----
+
 # Pacchetti ROS
 Il primo pacchetto sviluppato è il primo_controllo, il programma OIV.py (Odometry-IMU-velocity) usa due nodi provenienti da sensori.py per un subscriber(Odometry) e il nodo di publisher per le velocità dei rotori da motori.py
 
