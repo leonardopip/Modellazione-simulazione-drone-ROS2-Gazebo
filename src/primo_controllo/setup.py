@@ -24,7 +24,9 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'listener_node = primo_controllo.primo_controllo:main',
+            'controllo = primo_controllo.OIV:main',
+
+    
         ],
     },
 )
