@@ -41,9 +41,9 @@ def main(args=None):
                     motor_velocity.vel_msg = Actuators(velocity=[velocita,velocita,velocita,velocita] )
 
                 if comandi.spinta_orizzontale > 0: #spostamento a destra
-                    motor_velocity.vel_msg = Actuators(velocity=[velocita*(1-comandi.spinta_orizzontale), velocita, velocita, velocita*(1-comandi.spinta_orizzontale)])
+                    motor_velocity.vel_msg = Actuators(velocity=[velocita*(1-(comandi.spinta_orizzontale)/100), velocita, velocita, velocita*(1-(comandi.spinta_orizzontale)/100)])
                 elif comandi.spinta_orizzontale < 0: #spostamento a sinistra
-                    motor_velocity.vel_msg = Actuators(velocity=[velocita, velocita*(1+comandi.spinta_orizzontale), velocita*(1+comandi.spinta_orizzontale), velocita])
+                    motor_velocity.vel_msg = Actuators(velocity=[velocita, velocita*(1+(comandi.spinta_orizzontale)/100), velocita*(1+(comandi.spinta_orizzontale)/100), velocita])
             else:
                 motor_velocity.vel_msg = Actuators(velocity=[0.0,0.0,0.0,0.0])
             
