@@ -15,6 +15,8 @@ Il modello del drone è stato scaricato dalla libreria Fuel di gazebo
 
 All'interno non erano presenti i plug in dei motori li ho copiati da GitHub [X3 UAV Model on GitHub](https://github.com/gazebosim/gz-sim/blob/main/examples/worlds/quadcopter.sdf).
 
+rotore 0 e 1 lavorano ccw, rotore 2 e 3 clock wise
+
 
 Per l'implementazione dell'odometria e IMU ho inserito dei plugin all'interno del modello del drone
 
@@ -38,7 +40,8 @@ Il primo pacchetto sviluppato è il primo_controllo, il programma OIV.py (Odomet
 
 In OIV.py ho creato un semplice codice che inizialmente chiede una velocità dei rotori e quando arriva ad una determinata quota li spegne.
 
----
+## Pad_control
+il pacchetto pad control permette di controllare il drone modificando le velocità dei rotori. Utilizzando la l'analogico di sinistra di un controller un movimento su e giu rispettivamente aumenta e diminuisce le velocità dei motori, una spinta sinistra-destra invece modifica le velocita dei rotori per permettere di inclinare e spostare sul piano orizzontale il drone
 
 # Start
 Per lanciare la simulazionoe ROS-GAZEBO-RVIZ

@@ -24,7 +24,7 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'controllo = primo_controllo.OIV:main',
+            'controllo = primo_controllo.OIV_V1:main',
 
     
         ],

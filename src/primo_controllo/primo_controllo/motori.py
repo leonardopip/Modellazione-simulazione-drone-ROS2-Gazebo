@@ -4,6 +4,7 @@ from rclpy.node import Node
 from actuator_msgs.msg import Actuators
 
 
+
 class PublisherVelocity(Node):
 
     def __init__(self, velocita):
@@ -13,7 +14,7 @@ class PublisherVelocity(Node):
             '/X3/gazebo/command/motor_speed',
             10
         )
-        self.vel_msg = velocita
+        self.vel_msg = Actuators(velocity=[velocita, velocita, velocita, velocita])
         self.create_timer(0.1, self.timer_callback)  
 
     def timer_callback(self):

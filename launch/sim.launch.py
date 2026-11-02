@@ -34,7 +34,7 @@ def generate_launch_description():
         cmd=['gz', 'sim', '-r','-v', '4', world_file], 
         output='screen'
     ) 
-    #-r per far partire la simulazione in modalità "paused"
+    #-r per far partire la simulazione in modalità "run"
 
     #finds all of the non-fixed joints and publishes a JointState message with all those joints defined.
     #joint_state_publisher_gui = Node(
@@ -62,7 +62,7 @@ def generate_launch_description():
        package='rviz2',
        executable='rviz2',
        arguments=['-d', rviz_config],
-       output='screen'
+       output='log'
     )
 
     bridge = Node(
@@ -75,5 +75,5 @@ def generate_launch_description():
     )
 
 
-    return LaunchDescription([set_env, gz_sim, bridge, robot_state_publisher, rviz])
+    return LaunchDescription([set_env, gz_sim, bridge, robot_state_publisher])
 

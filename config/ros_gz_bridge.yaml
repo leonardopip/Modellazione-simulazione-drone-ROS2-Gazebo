@@ -32,7 +32,7 @@
   direction: GZ_TO_ROS
 
 - ros_topic_name: "/x3/imu"
-  gz_topic_name: "/world/wind_farm_x3/model/x3/link/X3/base_link/sensor/imu_sensor/imu"
+  gz_topic_name: "/imu"
   ros_type_name: "sensor_msgs/msg/Imu"
   gz_type_name: "gz.msgs.IMU"
   direction: GZ_TO_ROS
