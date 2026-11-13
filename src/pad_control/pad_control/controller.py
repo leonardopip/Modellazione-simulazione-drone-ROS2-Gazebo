@@ -1,59 +1,67 @@
-
 import rclpy
-import os
-import xml.etree.ElementTree as ET
-
-
-
-from rclpy.node import Node
+from rclpy.executors import SingleThreadedExecutor
 from actuator_msgs.msg import Actuators
 
 from pad_control.pad_sub import Pad_Sub
 from primo_controllo.motori import PublisherVelocity
 
+VEL_MAX = 800.0
 
-def VelocitaRotori(model_path):
-    root = ET.parse(model_path).getroot()
-    return max(float(v.text) for v in root.iter("maxRotVelocity"))
+THRUST_MAX = 0.9   # lascia margine ai comandi di assetto
+ROLL_MAX   = 0.1  # frazione di VEL_MAX
+PITCH_MAX  = 0.1
+YAW_MAX    = 0.05
+
+def mixer(spinta, pitch, roll, rot_dx, rot_sx):
+    """Ingressi pad: spinta, pitch, roll in [-1,1]; rot in {0,1}. Uscita: rad/s."""
+    if spinta <= 0:
+        return [0.0] * 4
+
+    t = spinta * THRUST_MAX
+    r = roll * ROLL_MAX      # >0 = destra
+    p = pitch * PITCH_MAX    # >0 = avanti
+    y_sx = rot_sx * YAW_MAX
+    y_dx = rot_dx * YAW_MAX
+
+    # layout: 0 dietro-dx, 1 davanti-sx, 2 dietro-sx, 3 davanti-dx
+    m = [
+        t - r + p - y_sx,   # 0
+        t + r - p - y_sx,   # 1
+        t + r + p - y_dx,   # 2
+        t - r - p - y_dx,   # 3
+    ]
+    return [max(0.0, min(1.0, v))* VEL_MAX for v in m]
 
 def main(args=None):
     rclpy.init(args=args)
 
-    #model_path = os.path.expanduser("~/gz_ws/models/x3/model.sdf")  # adatta al tuo percorso
-    velocita_massima = 800
-    #if not velocita_massima:
-    #    raise RuntimeError(f"Nessun maxRotVelocity trovato in {model_path}")
-    n_rotori = 4
-
     motor_velocity = PublisherVelocity(0.0)
     comandi = Pad_Sub()
-    stopped = False
-    
-    
+
+    executor = SingleThreadedExecutor()
+    executor.add_node(comandi)
+    executor.add_node(motor_velocity)
+
+    print("Controllo attivo")
     try:
         while rclpy.ok():
-            rclpy.spin_once(comandi, timeout_sec=0.05)
-            rclpy.spin_once(motor_velocity, timeout_sec=0.05)
+            executor.spin_once(timeout_sec=0.02)
 
-            if comandi.spinta_verticale is not None and comandi.spinta_orizzontale is not None:
-                if comandi.spinta_verticale > 0:
-                    velocita = comandi.spinta_verticale * velocita_massima
-                    motor_velocity.vel_msg = Actuators(velocity=[velocita,velocita,velocita,velocita] )
+            valori = (comandi.spinta, comandi.pitch, comandi.roll,
+                      comandi.rotazioneDx, comandi.rotazioneSx)
+            if any(v is None for v in valori):
+                continue
 
-                if comandi.spinta_orizzontale > 0: #spostamento a destra
-                    motor_velocity.vel_msg = Actuators(velocity=[velocita*(1-(comandi.spinta_orizzontale)/100), velocita, velocita, velocita*(1-(comandi.spinta_orizzontale)/100)])
-                elif comandi.spinta_orizzontale < 0: #spostamento a sinistra
-                    motor_velocity.vel_msg = Actuators(velocity=[velocita, velocita*(1+(comandi.spinta_orizzontale)/100), velocita*(1+(comandi.spinta_orizzontale)/100), velocita])
-            else:
-                motor_velocity.vel_msg = Actuators(velocity=[0.0,0.0,0.0,0.0])
-            
+            motor_velocity.vel_msg = Actuators(velocity=mixer(*valori))
     except KeyboardInterrupt:
         pass
     finally:
+        executor.shutdown()
+        comandi.destroy_node()
+        motor_velocity.destroy_node()
         if rclpy.ok():
             rclpy.shutdown()
-            
 
-    rclpy.shutdown()
+
 if __name__ == '__main__':
     main()

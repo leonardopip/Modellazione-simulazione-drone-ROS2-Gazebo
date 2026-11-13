@@ -43,6 +43,14 @@ In OIV.py ho creato un semplice codice che inizialmente chiede una velocità dei
 ## Pad_control
 il pacchetto pad control permette di controllare il drone modificando le velocità dei rotori. Utilizzando la l'analogico di sinistra di un controller un movimento su e giu rispettivamente aumenta e diminuisce le velocità dei motori, una spinta sinistra-destra invece modifica le velocita dei rotori per permettere di inclinare e spostare sul piano orizzontale il drone
 
+```
+ros2 run joy joy_node
+ros2 topic echo /joy
+```
+
+
+
+
 # Start
 Per lanciare la simulazionoe ROS-GAZEBO-RVIZ
 ```
