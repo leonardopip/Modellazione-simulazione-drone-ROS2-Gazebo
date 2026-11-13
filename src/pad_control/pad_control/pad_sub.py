@@ -32,6 +32,8 @@ class Pad_Sub(Node):
         self.roll = 0.0
         self.rotazioneDx = 0.0
         self.rotazioneSx = 0.0
+        self.accensione = 0
+        self.spegnimento = 0
         self.last_msg_time = None
 
         self.filter_spinta = LowPassFilter(0.2)
@@ -53,6 +55,8 @@ class Pad_Sub(Node):
         if len(msg.buttons) > 5:
             self.rotazioneDx = float(msg.buttons[5])
             self.rotazioneSx = float(msg.buttons[4])
+            self.accensione = float(msg.buttons[0])
+            self.spegnimento = float(msg.buttons[1])
 
         self.last_msg_time = self.get_clock().now()
 

@@ -23,7 +23,7 @@ setup(
         ],
     },
     entry_points={
-        'console_scripts': ['controller = pad_control.controller:main',
+        'console_scripts': ['controller = pad_control.flight_control:main',
         ],
     },
 )
