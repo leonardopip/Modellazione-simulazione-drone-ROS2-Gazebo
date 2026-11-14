@@ -23,9 +23,8 @@ Per l'implementazione dell'odometria e IMU ho inserito dei plugin all'interno de
 ```
 <plugin filename="gz-sim-odometry-publisher-system"
         name="gz::sim::systems::OdometryPublisher">
-        <odom_frame>odom</odom_frame>
-        <robot_base_frame>X3/base_link</robot_base_frame>
         <dimensions>3</dimensions>
+        <odom_topic>/x3/odometry</odom_topic>
 </plugin>
       
 <sensor name="imu_sensor" type="imu">
@@ -58,5 +57,10 @@ ros2 launch launch/sim.launch.py
 ```
 
 
+## Dashboard
+```
+python3 ros_dashboard_bridge.py
+http://127.0.0.1:8000/
 
+```
 

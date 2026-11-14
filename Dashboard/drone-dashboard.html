@@ -1,0 +1,184 @@
+
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dashboard drone</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600&family=Barlow:wght@400;500&display=swap">
+<style>
+:root{--bg:#e9eef2;--panel:#f7f9fb;--ink:#14222e;--mute:#5d6f7e;--line:#c5d0d9;--route:#c2188a;--sky:#7fb4dc;--gnd:#9a7b58;--warn:#b86e00;--ok:#1f7a4d;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e161d;--panel:#152029;--ink:#e3ecf3;--mute:#8da0b0;--line:#27384a;--route:#ff5fc1;--sky:#2f6a96;--gnd:#6b5337;--warn:#f0a43a;--ok:#4cc58a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0e161d;--panel:#152029;--ink:#e3ecf3;--mute:#8da0b0;--line:#27384a;--route:#ff5fc1;--sky:#2f6a96;--gnd:#6b5337;--warn:#f0a43a;--ok:#4cc58a;color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 15px/1.4 Barlow,system-ui,sans-serif}
+header{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--line);background:var(--panel)}
+h1{font:600 22px 'Barlow Condensed',sans-serif;margin:0;letter-spacing:.02em}
+.status{display:flex;gap:18px;flex-wrap:wrap;align-items:center;color:var(--mute)}
+.status b{color:var(--ink);font-weight:500}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--ok);margin-right:6px}
+.dot.off{background:var(--warn)}
+main{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:14px;padding:14px 20px;max-width:1200px;margin:auto}
+section{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px;min-width:0}
+h2{font:600 16px 'Barlow Condensed',sans-serif;margin:0 0 8px;color:var(--mute);letter-spacing:.03em}
+.map{grid-row:span 2}
+svg{display:block;width:100%;height:auto}
+.nums{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.n{border-left:3px solid var(--line);padding-left:10px}
+.n.warn{border-color:var(--warn)}
+.n span{display:block;color:var(--mute);font-size:13px}
+.n strong{font:600 34px/1.05 'Barlow Condensed',sans-serif;font-variant-numeric:tabular-nums}
+.n small{font-size:14px;color:var(--mute);font-weight:400}
+.inst{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.charts{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.sp{height:70px}
+.sp polyline{fill:none;stroke:var(--route);stroke-width:2;vector-effect:non-scaling-stroke}
+.cv{display:flex;justify-content:space-between;color:var(--mute);font-size:13px}
+.ax{display:grid;grid-template-columns:80px 1fr 46px;gap:8px;align-items:center;margin:8px 0}
+.ax b{font-weight:500;text-align:right;font-variant-numeric:tabular-nums}
+.tr{position:relative;height:10px;background:var(--bg);border:1px solid var(--line);border-radius:5px}
+.tr i{position:absolute;top:0;bottom:0;background:var(--route);border-radius:4px}
+.tr:after{content:"";position:absolute;left:50%;top:-2px;bottom:-2px;width:1px;background:var(--mute)}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.chip{padding:2px 10px;border:1px solid var(--line);border-radius:12px;color:var(--mute);font-size:13px}
+.chip.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.bars{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;height:130px}
+.bar{display:flex;flex-direction:column;justify-content:flex-end;text-align:center;font-size:13px;color:var(--mute)}
+.bar b{color:var(--ink);font-weight:500}
+.bar i{display:block;background:var(--route);border-radius:3px 3px 0 0;min-height:2px}
+.imu{margin:10px 0 0;color:var(--mute);font-size:13px}.imu b{color:var(--ink);font-weight:500}
+@media(max-width:760px){main{grid-template-columns:1fr;padding:10px}.map{grid-row:auto}.charts{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Dashboard drone</h1>
+  <div class="status">
+    <span><i class="dot off" id="dot"></i><b id="src">In attesa del drone</b></span>
+    <span>Modalità <b id="mode">–</b></span>
+    <span>Motori <b id="armed">–</b></span>
+    <span>Volo <b id="time">00:00</b></span>
+  </div>
+</header>
+<main>
+  <section class="map">
+    <h2>Traccia GPS, 1 quadretto = 50 m</h2>
+    <svg viewBox="0 0 300 300" role="img" aria-label="Mappa con traccia del volo">
+      <defs><pattern id="g" width="45" height="45" patternUnits="userSpaceOnUse" x="-15" y="-15"><path d="M45 0H0V45" fill="none" stroke="var(--line)" stroke-width="1"/></pattern></defs>
+      <rect width="300" height="300" fill="url(#g)"/>
+      <polyline id="trail" fill="none" stroke="var(--route)" stroke-width="2.5" stroke-linejoin="round" points=""/>
+      <g id="home"><circle r="7" fill="none" stroke="var(--ink)" stroke-width="2"/><text y="4" text-anchor="middle" font-size="9" fill="var(--ink)">H</text></g>
+      <g id="uav"><path d="M0-11L7 8L0 4L-7 8Z" fill="var(--route)" stroke="var(--bg)" stroke-width="1.5"/></g>
+    </svg>
+    <div class="cv"><span id="lat">–</span><span id="lon">–</span><span id="dist">–</span></div>
+  </section>
+  <section>
+    <h2>Strumenti</h2>
+    <div class="inst">
+      <svg viewBox="-60 -60 120 120" role="img" aria-label="Orizzonte artificiale">
+        <defs><clipPath id="c"><circle r="56"/></clipPath></defs>
+        <g clip-path="url(#c)"><g id="hz"><rect x="-200" y="-300" width="400" height="300" fill="var(--sky)"/><rect x="-200" y="0" width="400" height="300" fill="var(--gnd)"/><path d="M-200 0H200M-12-15H12M-20-30H20M-12 15H12M-20 30H20" stroke="#fff" stroke-width="1.5"/></g></g>
+        <circle r="56" fill="none" stroke="var(--ink)" stroke-width="3"/>
+        <path d="M-30 0H-10L0 8L10 0H30" fill="none" stroke="#ffc400" stroke-width="3"/>
+      </svg>
+      <svg viewBox="-60 -60 120 120" role="img" aria-label="Bussola">
+        <circle r="56" fill="var(--bg)" stroke="var(--ink)" stroke-width="3"/>
+        <g id="cp" font-size="11" text-anchor="middle" fill="var(--ink)" font-weight="500"><text y="-38">N</text><text x="38" y="4">E</text><text y="44">S</text><text x="-38" y="4">O</text><path d="M0-56V-50M56 0H50M0 56V50M-56 0H-50" stroke="var(--mute)" stroke-width="2"/></g>
+        <path d="M0-48L5-36H-5Z" fill="var(--route)"/>
+        <text id="hd" y="6" text-anchor="middle" font-size="20" font-family="Barlow Condensed" font-weight="600" fill="var(--ink)">0°</text>
+      </svg>
+    </div>
+  </section>
+  <section>
+    <h2>Telemetria</h2>
+    <div class="nums">
+      <div class="n"><span>Altitudine</span><strong id="alt">–</strong><small> m</small></div>
+      <div class="n"><span>Velocità</span><strong id="spd">–</strong><small> km/h</small></div>
+      <div class="n" id="bn"><span>Batteria</span><strong id="bat">–</strong><small> %</small></div>
+      <div class="n"><span>Satelliti</span><strong id="sat">–</strong></div>
+      <div class="n"><span>Rollio</span><strong id="rol">–</strong><small>°</small></div>
+      <div class="n"><span>Beccheggio</span><strong id="pit">–</strong><small>°</small></div>
+    </div>
+  </section>
+  <section>
+    <h2>Comandi dal pad</h2>
+    <div class="ax"><span>Spinta</span><div class="tr"><i id="c-thr"></i></div><b id="v-thr">0.00</b></div>
+    <div class="ax"><span>Pitch</span><div class="tr"><i id="c-pit"></i></div><b id="v-pit">0.00</b></div>
+    <div class="ax"><span>Roll</span><div class="tr"><i id="c-rol"></i></div><b id="v-rol">0.00</b></div>
+    <div class="chips"><span class="chip" id="b-sx">Rotazione sx</span><span class="chip" id="b-dx">Rotazione dx</span><span class="chip" id="b-arm">Accensione</span><span class="chip" id="b-off">Spegnimento</span></div>
+  </section>
+  <section>
+    <h2>Motori (rad/s)</h2>
+    <div class="bars" id="mot"></div>
+    <p class="imu">Giroscopio °/s <b id="gy">–</b></p>
+    <p class="imu">Accelerazione m/s² <b id="ac">–</b></p>
+  </section>
+  <div class="charts">
+    <section><h2>Altitudine (m)</h2><svg class="sp" viewBox="0 0 100 40" preserveAspectRatio="none"><polyline id="p-alt"/></svg></section>
+    <section><h2>Velocità (km/h)</h2><svg class="sp" viewBox="0 0 100 40" preserveAspectRatio="none"><polyline id="p-spd"/></svg></section>
+    <section><h2>Batteria (%)</h2><svg class="sp" viewBox="0 0 100 40" preserveAspectRatio="none"><polyline id="p-bat"/></svg></section>
+  </div>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const hist={alt:[],spd:[],batt:[]};let trail=[],live=false,t0=Date.now(),prev=null;
+let d={alt:0,spd:0,batt:100,sats:0,hdg:0,roll:0,pitch:0,x:0,y:0,mode:'–',armed:false,cmd:{},motors:[0,0,0,0],gyro:[0,0,0],acc:[0,0,0]};
+function push(k,v){const a=hist[k];a.push(v);if(a.length>60)a.shift()}
+function spark(id,a,lo,hi){
+  $(id).setAttribute('points',a.map((v,i)=>(i/59*100).toFixed(1)+','+(38-(v-lo)/(hi-lo)*36).toFixed(1)).join(' '));
+}
+function render(){
+  const px=150+d.x*.9,py=150-d.y*.9;
+  trail.push(px.toFixed(1)+','+py.toFixed(1));if(trail.length>400)trail.shift();
+  $('trail').setAttribute('points',trail.join(' '));
+  $('home').setAttribute('transform','translate(150 150)');
+  $('uav').setAttribute('transform','translate('+px+' '+py+') rotate('+d.hdg+')');
+  $('hz').setAttribute('transform','translate(0 '+(d.pitch*2)+') rotate('+(-d.roll)+')');
+  $('cp').setAttribute('transform','rotate('+(-d.hdg)+')');
+  $('hd').textContent=Math.round(d.hdg)+'°';
+  $('alt').textContent=d.alt.toFixed(0);$('spd').textContent=d.spd.toFixed(0);
+  $('bat').textContent=d.batt.toFixed(0);$('sat').textContent=d.sats;
+  $('rol').textContent=d.roll.toFixed(0);$('pit').textContent=d.pitch.toFixed(0);
+  $('bn').classList.toggle('warn',d.batt<30);
+  $('mode').textContent=d.mode;$('armed').textContent=d.armed?'Armati':'Spenti';
+  $('dist').textContent='Distanza dalla base '+Math.hypot(d.x,d.y).toFixed(0)+' m';
+  $('lat').textContent='Nord '+d.y.toFixed(0)+' m';$('lon').textContent='Est '+d.x.toFixed(0)+' m';
+  const s=Math.floor((Date.now()-t0)/1000);
+  $('time').textContent=String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+  push('alt',d.alt);push('spd',d.spd);push('batt',d.batt);
+  spark('p-alt',hist.alt,0,80);spark('p-spd',hist.spd,0,120);spark('p-bat',hist.batt,0,100);
+}
+function extras(){
+  const c=d.cmd||{};
+  [['thr',c.thr],['pit',c.pitch],['rol',c.roll]].forEach(([k,v])=>{v=+v||0;const e=$('c-'+k);e.style.left=(v>=0?50:50+v*50)+'%';e.style.width=Math.abs(v)*50+'%';$('v-'+k).textContent=v.toFixed(2)});
+  [['sx',c.rotSx],['dx',c.rotDx],['arm',c.arm],['off',c.off]].forEach(([k,v])=>$('b-'+k).classList.toggle('on',!!+v));
+  const m=d.motors||[],mx=Math.max(500,...m);
+  $('mot').innerHTML=m.map((v,i)=>'<div class="bar"><b>'+v.toFixed(0)+'</b><i style="height:'+(v/mx*80)+'px"></i><span>M'+(i+1)+'</span></div>').join('');
+  $('gy').textContent=(d.gyro||[]).map(v=>v.toFixed(0)).join(' / ');
+  $('ac').textContent=(d.acc||[]).map(v=>v.toFixed(1)).join(' / ');
+}
+function extras(){
+  const c=d.cmd||{};
+  [['thr',c.thr],['pit',c.pitch],['rol',c.roll]].forEach(([k,v])=>{v=+v||0;const e=$('c-'+k);e.style.left=(v>=0?50:50+v*50)+'%';e.style.width=Math.abs(v)*50+'%';$('v-'+k).textContent=v.toFixed(2)});
+  [['sx',c.rotSx],['dx',c.rotDx],['arm',c.arm],['off',c.off]].forEach(([k,v])=>$('b-'+k).classList.toggle('on',!!+v));
+  const m=d.motors||[],mx=Math.max(500,...m);
+  $('mot').innerHTML=m.map((v,i)=>'<div class="bar"><b>'+v.toFixed(0)+'</b><i style="height:'+(v/mx*80)+'px"></i><span>M'+(i+1)+'</span></div>').join('');
+  $('gy').textContent=(d.gyro||[]).map(v=>v.toFixed(0)).join(' / ');
+  $('ac').textContent=(d.acc||[]).map(v=>v.toFixed(1)).join(' / ');
+}
+setInterval(()=>{if(live)render()},500);
+setInterval(extras,100);
+function connect(){
+  const url=new URLSearchParams(location.search).get('ws')||'ws://'+(location.hostname||'localhost')+':8765';
+  let ws;
+  try{ws=new WebSocket(url)}catch(e){return setTimeout(connect,2000)}
+  ws.onopen=()=>{live=true;trail=[];t0=Date.now();$('src').textContent='Drone collegato';$('dot').classList.remove('off')};
+  ws.onmessage=e=>{try{Object.assign(d,JSON.parse(e.data))}catch(x){}};
+  ws.onclose=()=>{live=false;$('src').textContent='In attesa del drone';$('dot').classList.add('off');setTimeout(connect,2000)};
+}
+connect();
+</script>
+</body>
+</html>
+ 
