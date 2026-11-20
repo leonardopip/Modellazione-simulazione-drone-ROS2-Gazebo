@@ -24,6 +24,7 @@ setup(
     },
     entry_points={
         'console_scripts': ['controller = pad_control.flight_control:main',
+                            'pad_sub = pad_control.pad_sub:main'
         ],
     },
 )

@@ -1,6 +1,8 @@
 import rclpy
+import numpy as np
 from rclpy.node import Node
 from sensor_msgs.msg import Joy
+from std_msgs.msg import Float64MultiArray
 
 DEADZONE = 0.05
 JOY_TIMEOUT = 0.5  # secondi
@@ -27,7 +29,7 @@ class Pad_Sub(Node):
     def __init__(self):
         super().__init__('pad_sub')
 
-        self.spinta = 0.0
+        self.thrust = 0.0
         self.pitch = 0.0
         self.roll = 0.0
         self.rotazioneDx = 0.0
@@ -36,18 +38,24 @@ class Pad_Sub(Node):
         self.spegnimento = 0
         self.last_msg_time = None
 
-        self.filter_spinta = LowPassFilter(0.2)
+        self.filter_thrust = LowPassFilter(0.2)
         self.filter_pitch = LowPassFilter(0.2)
         self.filter_roll = LowPassFilter(0.2)
 
         self.subscription = self.create_subscription(
             Joy, '/joy', self.joy_callback, 10)
 
-        self.get_logger().info('Pad subscriber avviato')
+        
+
+        self.ComandiPub = self.create_publisher(Float64MultiArray,'/Comandi',10)
+        self.timer = self.create_timer(0.01, self.ComandiMatlab)
+
+        self.get_logger().info('Pad Node avviato')
+
 
     def joy_callback(self, msg):
         if len(msg.axes) > 4:
-            self.spinta = self.filter_spinta.filter(deadzone(msg.axes[4]))
+            self.thrust = self.filter_thrust.filter(deadzone(msg.axes[4]))
             self.pitch = self.filter_pitch.filter(deadzone(msg.axes[1]))
             # segno invertito: in ROS joy, sinistra = positivo
             self.roll = self.filter_roll.filter(deadzone(-msg.axes[0]))
@@ -61,7 +69,7 @@ class Pad_Sub(Node):
         self.last_msg_time = self.get_clock().now()
 
         self.get_logger().info(
-            f'Spinta: {self.spinta:.3f}, Pitch: {self.pitch:.3f}, '
+            f'Thrust: {self.thrust:.3f}, Pitch: {self.pitch:.3f}, '
             f'Roll: {self.roll:.3f}, DX: {self.rotazioneDx}, SX: {self.rotazioneSx}',
             throttle_duration_sec=1.0)
 
@@ -71,6 +79,17 @@ class Pad_Sub(Node):
             return False
         età = (self.get_clock().now() - self.last_msg_time).nanoseconds * 1e-9
         return età < JOY_TIMEOUT
+
+    def ComandiMatlab(self):
+        comandi = [self.thrust, 
+                    self.pitch,
+                    self.roll,
+                    self.rotazioneDx,
+                    self.rotazioneSx,
+                    self.accensione,
+                    self.spegnimento]
+        self.ComandiPub.publish(Float64MultiArray(data=comandi))
+        
 
 
 def main(args=None):

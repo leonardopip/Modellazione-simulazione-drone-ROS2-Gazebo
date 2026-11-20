@@ -25,6 +25,7 @@ setup(
     entry_points={
         'console_scripts': [
             'controllo = primo_controllo.OIV_V1:main',
+            'motori = primo_controllo.motori:main'
 
     
         ],
