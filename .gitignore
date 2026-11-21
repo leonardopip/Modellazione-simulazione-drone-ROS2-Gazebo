@@ -8,3 +8,5 @@ Controller/+bus_conv_fcns/
 /Controller/slprj/
 *.asv
 *.slxc
+*.slxc
+slprj/

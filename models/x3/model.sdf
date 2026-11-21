@@ -387,5 +387,8 @@
         <dimensions>3</dimensions>
         <odom_topic>/x3/odometry</odom_topic>
       </plugin>
+      <plugin filename="gz-sim-joint-state-publisher-system"
+        name="gz::sim::systems::JointStatePublisher">
+      </plugin>
   </model>
 </sdf>
